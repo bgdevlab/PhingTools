@@ -1,0 +1,24 @@
+{
+    "name": "bgdevlab/phing-tools",
+    "description": "Phing build tools",
+    "minimum-stability": "dev",
+
+    "keywords": ["build", "tool", "task", "phing", "jira", "svn"],
+    "homepage": "http://github.com/bgdevlab/phing-util",
+    "authors": [
+        {
+            "name": "Theo Dickinson",
+            "email": "theo.dickinson@blueglue.com.au"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "BgDevLab\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "phing/phing": "2.5.0",
+        "chobie/jira-api-restclient": "dev-master"
+    }
+}
