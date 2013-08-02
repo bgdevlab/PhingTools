@@ -4,7 +4,7 @@
     "minimum-stability": "dev",
 
     "keywords": ["build", "tool", "task", "phing", "jira", "svn"],
-    "homepage": "http://github.com/bgdevlab/phing-util",
+    "homepage": "https://github.com/bgdevlab/PhingTools",
     "authors": [
         {
             "name": "Theo Dickinson",
