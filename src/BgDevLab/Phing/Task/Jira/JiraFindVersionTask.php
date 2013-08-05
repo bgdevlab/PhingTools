@@ -1,6 +1,4 @@
 <?php
-namespace BgDevLab\Phing\Task\SVN;
-
 require_once dirname(__FILE__) . "/JiraTask.php";
 
 class JiraFindVersionTask extends JiraTask

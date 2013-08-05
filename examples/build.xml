@@ -1,0 +1,134 @@
+<project id="phing-builder" basedir="." name="phing-builder" default="prepare">
+
+    <php expression="date('Ymd-His')" returnProperty="phing.tstamp"/>
+
+    <property name="jira.project" value="JIRA-KEY" override="true"/>
+    <property name="jira.server.url" value="https://YOUR-JIRA-SERVER" override="true"/>
+    <property name="jira.user.name" value="JIRA-USER-NAME" override="true"/>
+    <property name="jira.user.password" value="JIRA-PASSWORD" override="true"/>
+
+    <property name="jira.version.id" value="TOBE-POPULATED" override="true" description="to be populated from JIRA RESTApi query"/>
+    <property name="jira.version.name" value="YOUR-RELEASE-NAME" override="true"/>
+
+    <property name="svn.binary" value="/usr/local/bin/svn"/>
+
+    <property name="svn.user.name" value="YOUR-SVN-USER" override="true"/>
+    <property name="svn.user.password" value="YOUR-SVN-PASSWORD" override="true"/>
+    <property name="svn.project.versionfilter" value="" override="true" description="Optional: an inclusive filter for SVN releases that may have different naming conventions"/>
+
+    <property name="svn.last.name" value="TOBE-POPULATED" description="to be populated by svnlasttag task"/>
+    <property name="svn.last.rev" value="TOBE-POPULATED" description="to be populated by svnlasttag task"/>
+
+    <property name="svn.repository.url" value="http://YOUR-SUBVERSION-SERVER/project/path" override="true" description="base svn url"/>
+
+    <property file="build.properties" description="override any properties"  override="true" />
+
+    <property name="svn.repository.version.url" value="${svn.repository.url}/tags" description="folder that contains released versions"/>
+    <property name="svn.repository.build.url" value="${svn.repository.url}/trunk" description="The url used to commit to, typically a trunk or a feature branch"/>
+
+
+    <path id="phing.project.class.path">
+
+        <!-- Namespaces not compatible with Phing 2.5,                      -->
+        <!-- http://www.phing.info/trac/ticket/650                          -->
+        <!-- Phing 3.0 may offer support.                                   -->
+
+        <pathelement dir="vendor/chobie/jira-api-restclient"/>
+        <pathelement dir="vendor/bgdevlab/phing-tools/src"/>
+    </path>
+
+    <!--                                                                    -->
+    <!-- PHPStormIDE - for code completion make sure the IDE's              -->
+    <!-- External Libraries include the same as classpath                   -->
+    <!-- 'phing.project.class.path'                                         -->
+    <!--                                                                    -->
+    <!-- * {project-dir}/vendor/chobie/jira-api-restclient                  -->
+    <!-- * {project-dir}vendor/bgdevlab/phing-tools/src                     -->
+    <!--                                                                    -->
+
+    <taskdef name="svnlasttag" classname="vendor.bgdevlab.phing-tools.src.BgDevLab.Phing.Task.SVN.SvnLastTagTask" classpathref="phing.project.class.path"/>
+    <taskdef name="jiraddversion" classname="vendor.bgdevlab.phing-tools.src.BgDevLab.Phing.Task.Jira.JiraAddVersionTask" classpathref="phing.project.class.path"/>
+    <taskdef name="jirafindversion" classname="vendor.bgdevlab.phing-tools.src.BgDevLab.Phing.Task.Jira.JiraFindVersionTask" classpathref="phing.project.class.path"/>
+
+    <target name="prepare">
+        <echo>
+            Populate the build.properties file before continuing.
+        </echo>
+    </target>
+
+
+    <target name="svn:tag:findrecent" depends="svn:prepare" description="Check the most recent release. (filtering using svn.project.versionfilter)">
+
+        <!--                                                                -->
+        <!-- Find the 'last tag' for a specified version                    -->
+        <!-- svn.repository.version.url typically points to a               -->
+        <!-- versioned/released subversion folder, e.g. TAGS                -->
+        <!--                                                                -->
+        <!-- To filter the releases use                                     -->
+        <!-- phing svn:tag:findrecent \                                     -->
+        <!-- -Dsvn.repository.url=http://svnrserver/proj/tags/ \            -->
+        <!-- -Dsvn.project.versionfilter=storeapp \                         -->
+
+        <svnlasttag
+                repositoryUrl="${svn.repository.version.url}" username="${svn.user.name}" password="${svn.user.password}" noCache="true"
+                svnPath="${svn.binary}" orderDescending="true" tagPrefixFilter="${svn.project.versionfilter}"
+                namePropertyName="svn.last.name" revPropertyName="svn.last.rev"
+                />
+
+        <php expression="''; preg_match('/([^0-9.]*)([0-9.]+)/', '${svn.last.name}', $m); $retval = $m[1];"
+             returnProperty="newtag.prefix"/>
+
+        <php expression="substr('${svn.last.name}', strlen('${newtag.prefix}'));"
+             returnProperty="newtag.version.check1"/>
+
+        <php expression="''; $a = explode('.', '${newtag.version.check1}'); $last = array_pop($a); $a[] = ++$last; $retval = implode('.', $a);"
+             returnProperty="newtag.version"/>
+
+        <echo message="recent version info tag : [${svn.last.name}] @ rev:[${svn.last.rev}] "/>
+        <echo message="new    version info tag : [${newtag.prefix}${newtag.version}] "/>
+
+    </target>
+
+
+    <target name="jira:project:version:getid">
+
+        <!--                                                                -->
+        <!-- Find the JIRA vers-id for a specified version name             -->
+        <!-- This version-id is being used in the JIRA's IssueCollector     -->
+        <!--                                                                -->
+
+        <jirafindversion
+                returnProperty="jira.version.id" versionName="${jira.version.name}"
+                jiraUser="${jira.user.name}" jiraPassword="${jira.user.password}" jiraProject="${jira.project}" jiraServerURL="${jira.server.url}"/>
+
+        <echo message="JIRA version id ( ${jira.version.id} ) for ( ${jira.version.name} )."/>
+    </target>
+
+
+    <target name="jira:project:version:create">
+
+        <!--                                                                -->
+        <!-- Create a JIRA version for a specified Project                  -->
+        <!--                                                                -->
+
+        <jiraddversion
+                returnProperty="jira.version.id" versionName="${jira.version.name}"
+                jiraUser="${jira.user.name}" jiraPassword="${jira.user.password}" jiraProject="${jira.project}" jiraServerURL="${jira.server.url}"/>
+
+        <echo message="JIRA version id ( ${jira.version.id} ) for ( ${jira.version.name} )."/>
+    </target>
+
+
+    <target name="svn:prepare">
+
+        <!--                                                                -->
+        <!-- Request SVN details                                            -->
+        <!--                                                                -->
+
+        <propertyprompt promptText="SVN User Name:" defaultValue="${svn.user.name}" propertyName="svn.user.name"/>
+
+        <echo message="svn.user.name = ${svn.user.name}"/>
+    </target>
+
+
+</project>

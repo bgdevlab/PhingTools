@@ -1,6 +1,4 @@
 <?php
-namespace BgDevLab\Phing\Task\Jira;
-
 require_once "phing/Task.php";
 require "Jira/Autoloader.php";
 

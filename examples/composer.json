@@ -1,0 +1,17 @@
+{
+    "name": "yourcompany/yourapp",
+    "description": "tools for deploying apps",
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/bgdevlab/PhingTools"
+
+        }
+    ],
+    "require": {
+        "bgdevlab/phing-tools": "dev-master"
+    }
+}
+
+

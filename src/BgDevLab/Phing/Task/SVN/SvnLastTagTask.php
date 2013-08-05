@@ -1,6 +1,4 @@
 <?php
-namespace BgDevLab\Phing\Task\Svn;
-
 require_once 'phing/Task.php';
 require_once 'phing/tasks/ext/svn/SvnBaseTask.php';
 
