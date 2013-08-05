@@ -61,10 +61,16 @@ class JiraAddVersionTask extends JiraTask
          *
          * this api will throw an Exceptions when passed invalid options, or already created.
          */
-        $api->createVersion($this->getJiraProject(), $this->getVersionName(), $options =
+        $response = $api->createVersion($this->getJiraProject(), $this->getVersionName(), $options =
             array(
                 "description" => $this->getVersionDescription(),
                 "releaseDate" => date('Y-m-d')
             ));
+
+        if (null !== $this->getReturnProperty()) {
+            $this->project->setProperty($this->getReturnProperty(), $response->getResult()['id']);
+    }
+
+        return $response->getResult()['id'];
     }
 }

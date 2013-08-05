@@ -44,10 +44,8 @@ class JiraFindVersionTask extends JiraTask
          * this api will throw an Exceptions when passed invalid options, or already created.
          */
         $versions = $api->getVersions($this->getJiraProject());
-        //print_r($versions);
 
         $version = $this->search_version($versions, "name", $this->getVersionName());
-        // print_r($version);
 
         if (null !== $this->getReturnProperty()) {
             $this->project->setProperty($this->getReturnProperty(), $version['id']);

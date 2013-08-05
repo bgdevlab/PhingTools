@@ -109,13 +109,15 @@
 
         <!--                                                                -->
         <!-- Create a JIRA version for a specified Project                  -->
+        <!-- Note: This task throws exception when version exists!!!        -->
         <!--                                                                -->
 
         <jiraddversion
-                returnProperty="jira.version.id" versionName="${jira.version.name}"
-                jiraUser="${jira.user.name}" jiraPassword="${jira.user.password}" jiraProject="${jira.project}" jiraServerURL="${jira.server.url}"/>
+                returnProperty="jira.version.id"
+                versionName="${jira.version.name}" versionDescription="test"
+                jiraProject="${jira.project}" jiraServerURL="${jira.server.url}" jiraUser="${jira.user.name}" jiraPassword="${jira.user.password}" />
 
-        <echo message="JIRA version id ( ${jira.version.id} ) for ( ${jira.version.name} )."/>
+        <echo message="JIRA version id ( ${jira.version.id} ) created for ( ${jira.version.name} )."/>
     </target>
 
 
