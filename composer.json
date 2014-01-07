@@ -19,6 +19,6 @@
     "require": {
         "php": ">=5.3.3",
         "phing/phing": "~2.5",
-        "chobie/jira-api-restclient": "dev-master"
+        "chobie/jira-api-restclient": "~1.0@dev"
     }
 }
