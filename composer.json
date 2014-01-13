@@ -1,8 +1,9 @@
 {
     "name": "bgdevlab/phing-tools",
     "description": "Phing build tools",
-    "minimum-stability": "RC",
+    "minimum-stability": "dev",
     "prefer-stable": true,
+    "type":" library",
     "keywords": ["build", "tool", "task", "phing", "jira", "svn"],
     "homepage": "https://github.com/bgdevlab/PhingTools",
     "authors": [
@@ -11,6 +12,13 @@
             "email": "theodson@gamil.com"
         }
     ],
+    "require": {
+        "php": ">=5.3.3",
+        "chobie/jira-api-restclient": "~1.0@dev"
+    },
+    "require-dev": {
+        "phing/phing": "~2.5"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
@@ -20,13 +28,6 @@
         "psr-0": {
             "BgDevLab\\": "src/"
         }
-    },
-    "require": {
-        "php": ">=5.3.3",
-        "chobie/jira-api-restclient": "~1.0@dev"
-    },
-    "require-dev": {
-        "phing/phing": "~2.5"
     },
     "repositories": {
         "jira-api-restclient": {
